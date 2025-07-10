@@ -29,7 +29,7 @@ class ChatScreen extends StatelessWidget {
           ),
         ),
         centerTitle: false,
-        title: const Text('ChatBot'),
+        title: const Text('Yes or Not'),
       ),
       body: _ChatView(),
     );
@@ -56,7 +56,7 @@ class _ChatView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final message = chatProvider.messageList[index];
                   return (message.fromWho == FromWho.friend)
-                  ? HisMessageBubble()
+                  ? HisMessageBubble(message: message)
                   : MyMessageBubble(message: message);
                 },
               ),

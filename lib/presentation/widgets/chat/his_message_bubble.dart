@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:yes_no_app/domain/entities/message.dart';
 
 class HisMessageBubble extends StatelessWidget {
-  const HisMessageBubble({super.key});
+  final Message message;
+
+  const HisMessageBubble({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -16,18 +19,15 @@ class HisMessageBubble extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
-              child: Text(
-                "Aliquip Lorem quis est quis sunt irure.",
-                style: TextStyle(color: Colors.white),
+              child: Text(message.text, style: TextStyle(color: Colors.white),
+              ),
               ),
             ),
           ),
-        ),
-
         SizedBox(height: 5),
         Padding(
           padding: const EdgeInsets.only(left: 8),
-          child: _ImageBubble(),
+          child: _ImageBubble(message.imageUrl!),
         ),
         SizedBox(height: 10),
       ],
@@ -36,13 +36,17 @@ class HisMessageBubble extends StatelessWidget {
 }
 
 class _ImageBubble extends StatelessWidget {
+
+  final String imageUrl;
+
+  const _ImageBubble( this.imageUrl);
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;// MediaQuery.of(context, child: child)
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: Image.network(
-        "https://yesno.wtf/assets/no/18-1ba72d815ec0e2bff8dba8699a50e275.gif",
+        imageUrl,
         width: size.width * 0.5,
         height: size.height * 0.2,
         fit: BoxFit.cover,
@@ -96,4 +100,79 @@ class MessageBubbleClipperLeft extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class TypingDots extends StatefulWidget {
+  const TypingDots({super.key});
+
+  @override
+  State<TypingDots> createState() => _TypingDotsState();
+}
+
+class _TypingDotsState extends State<TypingDots>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> animation1;
+  late Animation<double> animation2;
+  late Animation<double> animation3;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+
+    animation1 = Tween<double>(begin: 0, end: 8).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.3)),
+    );
+    animation2 = Tween<double>(begin: 0, end: 8).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.2, 0.5)),
+    );
+    animation3 = Tween<double>(begin: 0, end: 8).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.4, 0.7)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 20,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Dot(animation: animation1),
+          const SizedBox(width: 4),
+          Dot(animation: animation2),
+          const SizedBox(width: 4),
+          Dot(animation: animation3),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+class Dot extends AnimatedWidget {
+  const Dot({required Animation<double> animation})
+    : super(listenable: animation);
+
+  @override
+  Widget build(BuildContext context) {
+    final animation = listenable as Animation<double>;
+    return Container(
+      width: 8,
+      height: 8 + animation.value,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
 }
