@@ -14,7 +14,7 @@ class ChatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: SizedBox(
-          width: 56,
+          width: 55,
           child: Align(
             alignment: Alignment.centerLeft,
             child: Padding(
